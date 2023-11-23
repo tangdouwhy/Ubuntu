@@ -51,3 +51,159 @@ sudo apt-get install mysql-server #默认最新版
 ```
 
 当你在Ubuntu上使用sudo apt-get install mysql-server指令安装mysql后，你会发现你登录不上，会出现这样的情况。
+
+```shell
+hadoop@yjp:~$ mysql
+ERROR 1045 (28000): Access denied for user 'yjp'@'localhost' (using password: NO)
+hadoop@yjp:~$ mysql -uroot -p
+Enter password: 
+ERROR 1698 (28000): Access denied for user 'root'@'localhost'
+```
+
+使用上述指令安装mysql后，在安装过程中mysql数据库自动为你设置了账号密码，并放在了/etc/mysql/debian.cnf文件中
+
+![img](./assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzI2MTY0NjA5,size_16,color_FFFFFF,t_70.png)
+
+图中显示的就是默认随机的账户与密码，我们可以使用这组账号与面进行mysql登录
+
+## 修改数据库配置文件绕过密码登录
+
+**不建议使用**
+
+设置过程中因为绕过密码登录，会使root用户处于无密码状态，后期修改密码会报一个root处于无密码状态的错误，当然能解决。
+
+当修改完密码后，还要将添加的内容注释掉，较为繁琐！
+
+``` shell
+sudo gedit /etc/mysql/mysql.conf.d/mysqld.cnf        # 这里你也可以用vim编辑器，都是一样的。
+```
+
+找到[mysqld]
+
+添加如下内容：
+
+```shell
+skip-grant-tables
+```
+
+![img](./assets/20200621065647137.png)
+
+保存退出！重启mysql服务
+
+```shell
+service mysql restart
+```
+
+登录mysql
+
+``` shell
+mysql -uroot -p
+```
+
+密码随便输，直接就进去了！
+
+## 修改MYSQL 用户密码
+
+一、切换数据库
+
+``` shell
+use mysql
+```
+
+二、修改root用户密码
+
+注意下面两条修改mysql root用户密码的命令只适用于mysql5.7版本及以下
+
+这里你会发现你在网上搜出来的大部分修改面的命令都是
+
+```mysql
+update user set password=PASSWORD("123456") where user=root;                              --设置密码为123456
+```
+
+或者是
+
+``` mysql
+update user set authentication_string=PASSWORD(“123456”) where user=‘root’;              --设置密码为123456
+```
+
+如果你是mysql5.7用户及以下，上面两条指令适用于你！
+
+执行完命令之后 flush privileges;  更新所有操作权限，重启数据库 service mysql restart 即可
+
+mysql 5.7.9以后废弃了password字段和password()函数；authentication_string:字段表示用户密码，而authentication_string字段下只能是mysql加密后的41位字符串密码。
+
+而我们一般现在使用指令安装mysql会默认安装最新版mysql8.0
+
+修改mysql8.0 root用户密码正确打开方式
+
+MySql 从8.0开始修改密码有了变化，在user表加了字段authentication_string，修改密码前先检查authentication_string是否为空
+
+如果不为空，先置空字段在修改密码
+
+```mysql
+use mysql; 
+
+update user set authentication_string='' where user='root';      --将字段置为空
+
+alter user 'root'@'localhost' identified with mysql_native_password by '123456';  
+ 
+--修改密码为123456
+如果为空，则直接修改密码
+
+alter user 'root'@'localhost' identified with mysql_native_password by '123456';   
+--修改密码为123456
+```
+
+
+修改成功！
+
+![img](./assets/20200621081833938.png)
+
+登陆成功！
+
+![img](./assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzI2MTY0NjA5,size_16,color_FFFFFF,t_70-1700727315725-7.png)
+
+**如果出现下列错误：**
+
+```mysql
+ERROR 1290 (HY000): The MySQL server is running with the --skip-grant-tables option so it cannot execute this statement
+
+```
+
+这是由于你上面如果用的第二种方法设置绕过密码登录，这时root用户是无密码状态，会报这个错误！
+
+这时，先执行
+
+```mysql
+flush privileges;
+
+```
+
+然后再执行修改密码命令就行了
+
+```mysql
+alter user 'root'@'localhost' identified with mysql_native_password by '123456';      --修改密码为123456
+```
+
+大功告成！
+
+重启mysql
+
+``` shell
+service mysql restart
+```
+
+使用第一种方法直接查看mysql默认账户密码登录的则自动忽略下述内容！
+
+如果你是修改的 /etc/mysql/mysql.conf.d/mysqld.cnf  文件设置绕过密码登录（即上述第二种方法进入数据库）
+
+设置密码完毕后一定要将 skip-grant-tables 这句代码在文件中注释掉。
+
+然后重启mysql
+
+```shell
+service mysql restart
+```
+
+
+
