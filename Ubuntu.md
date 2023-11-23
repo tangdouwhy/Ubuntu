@@ -205,5 +205,26 @@ service mysql restart
 service mysql restart
 ```
 
+# GIT
+
+## 别名
+
+```shell
+#查看当前所有远程地址别名
+git remote -v 
+
+git remote add [别名] [远程地址]
+
+```
+
+## git fatal: 拒绝合并无关的历史
+
+出现这个错误的原因：本地初始化的项目 与 github 版本不一致, 导致无法提交
+解决办法：在pull 时候, 添加–allow-unrelated-histories参数。
+
+``` shell
+git pull origin master --allow-unrelated-histories 
+```
+
 
 
