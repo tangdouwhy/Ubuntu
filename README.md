@@ -205,6 +205,97 @@ service mysql restart
 service mysql restart
 ```
 
+
+
+## MYSQL无法读取本地文件文件
+
+mysql的位置
+
+```shell
+which mysql
+```
+
+输出目录
+
+```shell
+/usr/bin/mysql
+```
+
+```shell
+# 查看 mysql 配置文件加载顺序
+/usr/bin/mysql --verbose --help | grep -A 1 'Default options'
+```
+
+然后会出现一些信息
+
+![image-20231124165219820](./assets/image-20231124165219820.png)
+
+这个信息的意思是：
+
+服务器首先读取的是 /etc/my.cnf 文件，如果前一个文件不存在则继续读 /etc/mysql/my.cnf 文件，依此类推，如若还不存在便会去读~/.my.cnf文件。
+
+如果以上文件都不存在，则说明在对mysql编译完成之后你没有对mysql进行配置，需要你自己复制一份mysql提供的默认配置文件到上面提到的目录中，然后改名为my.cnf，修改文件的所有者和所属组并赋予执行权限。
+
+
+
+```text
+mkdir /usr/etc
+
+cp /usr/support-files/my-default.cnf /usr/local/mysql/etc/my.cnf
+
+chown -R mysql:mysql /usr/etc/
+
+chmod 755 /usr/etc/my.cnf
+```
+
+完成以上操作之后，需要对my.cnf进行基本配置
+
+```shell
+vim /usr/etc/my.cnf
+```
+
+例如：
+
+```text
+basedir = /usr/local/mysql              # 指mysql的安装目录
+datadir = /usr/local/mysql/data         # 指mysql的数据存放目录
+port = 3306                             # 指mysql的监听端口
+```
+
+最后重启mysql使配置生效
+
+```shell
+/usr/support-files/mysql.server restart
+```
+
+
+
+如果修改my.cnf后mysql启动不了,可以通过如下方式查看错误信息
+
+```shell
+/usr/bin/mysqld --verbose --help | grep -A 1 'Default options'
+```
+
+
+
+修改mysql配置文件
+
+![image-20231124165641106](./assets/image-20231124165641106.png)
+
+将mysql的安全文件夹设置为mysql用户的
+
+```shell
+sudo chown -r mysql:mysql /mysql_data/
+```
+
+增加读写权限
+
+```shell
+sudo chmod -r 777 /mysql_data/
+```
+
+![image-20231124165723520](./assets/image-20231124165723520.png)
+
 # GIT
 
 ## 别名
