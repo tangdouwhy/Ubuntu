@@ -1,3 +1,5 @@
+[TOC]
+
 # 输入法无法切换中文
 
 ## 解决方案
@@ -209,6 +211,8 @@ service mysql restart
 
 ## MYSQL无法读取本地文件文件
 
+### mysql的读取
+
 mysql的位置
 
 ```shell
@@ -278,7 +282,7 @@ port = 3306                             # 指mysql的监听端口
 
 
 
-修改mysql配置文件
+### 修改mysql配置文件
 
 ![image-20231124165641106](./assets/image-20231124165641106.png)
 
