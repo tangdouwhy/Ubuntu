@@ -10,6 +10,15 @@
   - [修改数据库配置文件绕过密码登录](#修改数据库配置文件绕过密码登录)
   - [修改MYSQL 用户密码](#修改mysql-用户密码)
   - [MYSQL无法读取本地文件文件](#mysql无法读取本地文件文件)
+  - [安全设置](#安全设置)
+  - [修改AppArmor配置文件](#修改apparmor配置文件)
+  - [取消禁用AppArmor服务](#取消禁用apparmor服务)
+    - [1. 启用 AppArmor 服务：](#1-启用-apparmor-服务)
+    - [2. 启动 AppArmor 服务：](#2-启动-apparmor-服务)
+    - [3. 检查 AppArmor 状态：](#3-检查-apparmor-状态)
+    - [4. 重新加载 AppArmor 配置（可选）：](#4-重新加载-apparmor-配置可选)
+    - [禁用 AppArmor 服务：](#禁用-apparmor-服务)
+    - [卸载 AppArmor 软件包：](#卸载-apparmor-软件包)
     - [mysql的读取](#mysql的读取)
     - [修改mysql配置文件](#修改mysql配置文件)
 - [GIT](#git)
@@ -226,6 +235,129 @@ service mysql restart
 
 
 ## MYSQL无法读取本地文件文件
+
+## 安全设置
+
+如果你的系统启用了 SELinux 或 AppArmor，这些安全模块可能会影响文件访问权限。你可以通过禁用它们或者配置相应的规则来解决问题。
+
+在使用 Ubuntu 或类似基于 Debian 的 Linux 发行版时，AppArmor 是一种应用程序安全框架，用于限制特定程序的活动。如果你需要禁用 AppArmor，可以按照以下步骤进行操作：
+
+## 修改AppArmor配置文件
+
+![截图 2023-11-27 17-57-49](./assets/%E6%88%AA%E5%9B%BE%202023-11-27%2017-57-49.png)
+
+第一行加入允许读取的数据文件夹
+
+rwk表示
+
+- r - 读取 - 读取数据的权限
+- w - 写入 - 创建、删除、写入文件和扩展文件的权限
+
+- k - lock - 锁定文件的权限，与 write perm 结合以确定它是否有权获取独占锁定
+
+重启AppArmor
+
+```text
+sudo service apparmor reload
+```
+
+## 取消禁用AppArmor服务
+
+### 1. 启用 AppArmor 服务：
+
+```
+bashCopy code
+sudo systemctl enable apparmor
+```
+
+这将使 AppArmor 在系统启动时自动启动。
+
+### 2. 启动 AppArmor 服务：
+
+```
+bashCopy code
+sudo systemctl start apparmor
+```
+
+### 3. 检查 AppArmor 状态：
+
+```
+bashCopy code
+sudo systemctl status apparmor
+```
+
+上述命令将显示 AppArmor 服务的当前状态。如果状态显示为 "active"，则表示 AppArmor 服务已成功启动。
+
+### 4. 重新加载 AppArmor 配置（可选）：
+
+在重新启用 AppArmor 后，你可以选择重新加载配置以使更改生效：
+
+```
+bashCopy code
+sudo service apparmor reload
+```
+
+或者，如果你使用的是 systemd：
+
+```
+bashCopy code
+sudo systemctl reload apparmor
+```
+
+这些步骤应该使 AppArmor 服务重新启用并运行。请注意，重新启用 AppArmor 服务可能会导致之前由 AppArmor 禁用的应用程序再次受到 AppArmor 的限制。确保你的应用程序配置适当，以适应 AppArmor 的规则。
+
+### 禁用 AppArmor 服务：
+
+1. **停止 AppArmor 服务：**
+
+   ```
+   bashCopy code
+   sudo systemctl stop apparmor
+   ```
+
+2. **禁用 AppArmor 服务（可选）：**
+
+   ```
+   bashCopy code
+   sudo systemctl disable apparmor
+   ```
+
+   这样系统启动时就不会加载 AppArmor 服务。
+
+3. **重启计算机：**
+
+   ```
+   bashCopy code
+   sudo reboot
+   ```
+
+### 卸载 AppArmor 软件包：
+
+如果你希望彻底删除 AppArmor，而不仅仅是停止服务，可以执行以下步骤：
+
+1. **卸载 AppArmor 软件包：**
+
+   ```
+   bashCopy code
+   sudo apt-get purge apparmor
+   ```
+
+   这将删除 AppArmor 软件包及其配置文件。
+
+2. **重启计算机：**
+
+   ```
+   bashCopy code
+   sudo reboot
+   ```
+
+请注意，禁用或删除 AppArmor 可能会导致系统安全性降低，因为 AppArmor 的目的是提供一层额外的安全保护。在禁用或删除之前，请确保你理解了相关的风险，并确保你有其他安全机制来保护系统。
+
+参考资料
+
+[chatgpt](https://chat.openai.com/)
+
+[AppArmor与MySQL](https://zhuanlan.zhihu.com/p/407785086)
 
 ### mysql的读取
 
