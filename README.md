@@ -7,6 +7,10 @@
   - [双系统开机到grub的解决](#双系统开机到grub的解决)
 - [Linux安装MySQL](#linux安装mysql)
   - [Linux/UNIX 上安装 MySQL](#linuxunix-上安装-mysql)
+  - [完全卸载MYSQL](#完全卸载mysql)
+      - [先卸载 mysql-common](#先卸载-mysql-common)
+      - [然后再卸载](#然后再卸载)
+      - [最后清除残留数据](#最后清除残留数据)
   - [修改数据库配置文件绕过密码登录](#修改数据库配置文件绕过密码登录)
   - [修改MYSQL 用户密码](#修改mysql-用户密码)
   - [MYSQL无法读取本地文件文件](#mysql无法读取本地文件文件)
@@ -77,6 +81,18 @@ PS:出现这种情况的可能原因：win系统更新覆盖了，强制关闭li
 sudo apt-get install mysql-server #默认最新版
 ```
 
+安装依赖
+
+```shell
+sudo apt install libmysqlclient-dev
+```
+
+检查状态
+
+```shell
+sudo netstat -tap | grep mysql
+```
+
 当你在Ubuntu上使用sudo apt-get install mysql-server指令安装mysql后，你会发现你登录不上，会出现这样的情况。
 
 ```shell
@@ -92,6 +108,28 @@ ERROR 1698 (28000): Access denied for user 'root'@'localhost'
 ![img](./assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzI2MTY0NjA5,size_16,color_FFFFFF,t_70.png)
 
 图中显示的就是默认随机的账户与密码，我们可以使用这组账号与面进行mysql登录
+
+## 完全卸载MYSQL
+
+#### 先卸载 mysql-common
+
+```shell
+sudo apt-get remove mysql-common
+```
+
+#### 然后再卸载
+
+```shell
+sudo apt-get autoremove --purge mysql-server-8.0
+```
+
+#### 最后清除残留数据
+
+```shell
+dpkg -l |grep ^rc|awk '{print $2}' |sudo xargs dpkg -P 
+```
+
+再用dpkg --list|grep mysql查看，还剩什么就卸载什么
 
 ## 修改数据库配置文件绕过密码登录
 
