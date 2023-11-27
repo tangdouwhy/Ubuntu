@@ -244,6 +244,8 @@ service mysql restart
 
 ## 修改AppArmor配置文件
 
+MySQL的AppArmor的配置文件是/etc/apparmor.d/usr.sbin.mysqld，其中usr.sbin.mysqld代表执行程序/usr/sbin/mysqld，也就是MySQL服务的主程序
+
 ![截图 2023-11-27 17-57-49](./assets/%E6%88%AA%E5%9B%BE%202023-11-27%2017-57-49.png)
 
 第一行加入允许读取的数据文件夹
