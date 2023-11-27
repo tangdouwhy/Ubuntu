@@ -1,5 +1,9 @@
 # 目录
 - [目录](#目录)
+- [Ubuntu22.04利用lightdm替换gdm3出现的问题或Bug](#ubuntu2204利用lightdm替换gdm3出现的问题或bug)
+  - [切换屏幕管理器](#切换屏幕管理器)
+  - [推荐下载lightdm屏幕管理器](#推荐下载lightdm屏幕管理器)
+  - [修复lightdm无法锁屏的问题](#修复lightdm无法锁屏的问题)
 - [输入法无法切换中文](#输入法无法切换中文)
   - [解决方案](#解决方案)
   - [参考链接](#参考链接)
@@ -29,9 +33,56 @@
   - [别名](#别名)
   - [git fatal: 拒绝合并无关的历史](#git-fatal-拒绝合并无关的历史)
 
+# Ubuntu22.04利用lightdm替换gdm3出现的问题或Bug
+
+## 切换屏幕管理器
+
+```shell
+sudo dpkg-reconfigure gdm3
+sudo dpkg-reconfigure lightdm
+```
+
+## 推荐下载lightdm屏幕管理器
+
+```shell
+sudo apt-get install lightdm
+```
+
+## 修复lightdm无法锁屏的问题
+
+```shell
+gsettings get org.gnome.desktop.lockdown disable-lock-screen
+```
+
+检查disable-lock-screen属性，若输出false则是正常，如果返回值是True，则输入下面命令：
+
+```shell
+gsettings set org.gnome.desktop.lockdown disable-lock-screen false
+```
+
+更改为flase，
+
+输入下面命令看是否可以锁屏：
+
+```shell
+dm-tool lock
+```
+
+若可以实现锁屏，就是图形界面是lightdm而不是gdm3，使用了lightdm 桌面管理器，导致锁屏命令变化，即：设置->键盘快捷键->添加自定义快捷键：
+
+禁用原锁屏键
+
+![截图 2023-11-27 21-57-40](./assets/%E6%88%AA%E5%9B%BE%202023-11-27%2021-57-40.png)
+
+自定义快捷键
+
+![image-20231127215927399](./assets/image-20231127215927399.png)
+
 # 输入法无法切换中文
 
 ## 解决方案
+
+目前gdm3无法使用中文，我使用的是lightdm屏幕管理器
 
 使用搜狗输入法
 
