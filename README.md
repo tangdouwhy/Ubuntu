@@ -305,13 +305,13 @@ port = 3306                             # 指mysql的监听端口
 将mysql的安全文件夹设置为mysql用户的
 
 ```shell
-sudo chown -r mysql:mysql /mysql_data/
+sudo chown -R mysql:mysql /mysql_data/
 ```
 
 增加读写权限
 
 ```shell
-sudo chmod -r 777 /mysql_data/
+sudo chmod -R 777 /mysql_data/
 ```
 
 ![image-20231124165723520](./assets/image-20231124165723520.png)
