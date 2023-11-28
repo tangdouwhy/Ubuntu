@@ -34,6 +34,11 @@
 - [GIT](#git)
   - [别名](#别名)
   - [git fatal: 拒绝合并无关的历史](#git-fatal-拒绝合并无关的历史)
+- [QT6.61](#qt661)
+  - [安装完打不开的问题](#安装完打不开的问题)
+      - [解决Qt出现qt.qpa.plugin:Could not load the Qt platform plugin "xcb"](#解决qt出现qtqpaplugincould-not-load-the-qt-platform-plugin-xcb)
+    - [定位问题](#定位问题)
+    - [解决方法](#解决方法)
 
 # Ubuntu22.04利用lightdm替换gdm3出现的问题或Bug
 
@@ -574,5 +579,89 @@ git remote add [别名] [远程地址]
 git pull origin master --allow-unrelated-histories 
 ```
 
+# QT6.61
+
+## 安装完打不开的问题
+
+#### 解决Qt出现qt.qpa.plugin:Could not load the Qt platform plugin "xcb"
+
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: eglfs, linuxfb, minimal, minimalegl, offscreen, vnc, xcb.
+
+Aborted (core dumped)
 
 
+
+```shell
+root@node01:/home/Junjie/ovito-basic-3.9.4-x86_64/bin# ./ovito
+qt.qpa.plugin: From 6.5.0, xcb-cursor0 or libxcb-cursor0 is needed to load the Qt xcb platform plugin.
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+ 
+Available platform plugins are: minimal, wayland, xcb.
+ 
+已放弃 (核心已转储)
+```
+
+
+
+### 定位问题
+
+修改配置文件~/.bashrc：
+
+```shell
+vim ~/.bashrc
+```
+
+在最末尾添加如下语句，会在qtcreator启动时，列出详细的错误提示。
+
+```shell
+export QT_DEBUG_PLUGINS=1
+```
+
+保存退出编辑，使配置文件生效：
+
+```shell
+source ~/.bashrc
+```
+
+启动qtcreator会弹出如下详细错误信息：
+
+![详细错误信息](./assets/w.png)
+
+在打印的错误信息的最下面，找到了引发错误的真正原因：
+
+![IMG_20231128_192245](./assets/IMG_20231128_192245.jpg)
+
+![引发错误的真正原因](./assets/w1.png)
+
+也就是Qt动态链接库的问题，当加载libqxcb.so库的时候，还需要加载libxcb-xinerama库。
+切换到报错libxcb.so所在目录：
+
+```shell
+#替换为自己的报错目录
+cd /home/tangdou/Qt/Tools/QtCreator/lib/Qt/plugins/platforms/
+```
+
+运行ldd libqxcb.so，查看关联内容：
+
+```shell
+ldd libqxcb.so
+```
+
+
+
+![IMG_20231128_192245](./assets/IMG_20231128_192245-1701171499174-9.jpg)
+
+libxcb.cursor.so.0没有
+
+### 解决方法
+
+安装libxcb-cursor0库：
+
+```shell
+#如果还存在其他依赖库没有安装，也一并安装。
+sudo apt-get install libxcb-cursor0
+```
