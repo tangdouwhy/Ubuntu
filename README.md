@@ -1,6 +1,8 @@
 # 目录
 - [目录](#目录)
 - [Ubuntu22.04利用lightdm替换gdm3出现的问题或Bug](#ubuntu2204利用lightdm替换gdm3出现的问题或bug)
+  - [查看当前屏幕管理器](#查看当前屏幕管理器)
+  - [查看当前桌面环境](#查看当前桌面环境)
   - [切换屏幕管理器](#切换屏幕管理器)
   - [推荐下载lightdm屏幕管理器](#推荐下载lightdm屏幕管理器)
   - [修复lightdm无法锁屏的问题](#修复lightdm无法锁屏的问题)
@@ -34,6 +36,18 @@
   - [git fatal: 拒绝合并无关的历史](#git-fatal-拒绝合并无关的历史)
 
 # Ubuntu22.04利用lightdm替换gdm3出现的问题或Bug
+
+## 查看当前屏幕管理器
+
+```shell
+cat /etx/X11/default-display-manager
+```
+
+## 查看当前桌面环境
+
+```shell
+echo $DESKTOP_SESSION 
+```
 
 ## 切换屏幕管理器
 
