@@ -39,6 +39,11 @@
       - [解决Qt出现qt.qpa.plugin:Could not load the Qt platform plugin "xcb"](#解决qt出现qtqpaplugincould-not-load-the-qt-platform-plugin-xcb)
     - [定位问题](#定位问题)
     - [解决方法](#解决方法)
+- [PDF转图片](#pdf转图片)
+  - [**将PDF文档转成图片**](#将pdf文档转成图片)
+  - [**将指定范围内的页面转成图片**](#将指定范围内的页面转成图片)
+  - [**将pdf文件的第一页转成图片**](#将pdf文件的第一页转成图片)
+  - [**调整转换图片的DPI质量**](#调整转换图片的dpi质量)
 
 # Ubuntu22.04利用lightdm替换gdm3出现的问题或Bug
 
@@ -664,4 +669,84 @@ libxcb.cursor.so.0没有
 ```shell
 #如果还存在其他依赖库没有安装，也一并安装。
 sudo apt-get install libxcb-cursor0
+```
+
+# PDF转图片
+
+Pdftoppm是一个命令行工具，它可以将PDF文档页面转换为PNG等格式的图片。还可以指定图片的分辨率、比例和裁剪图片。
+
+根据你的Linux发行版按照如下方式安装pdftoppm。
+
+```shell
+sudo apt install poppler-utils     [On Debian/Ubuntu & Mint]
+sudo dnf install poppler-utils     [On RHEL/CentOS & Fedora]
+sudo zypper install poppler-tools  [On OpenSUSE]  
+sudo pacman -S poppler             [On Arch Linux]
+```
+
+## **将PDF文档转成图片**
+
+将pdf转换为图片的命令如下：
+
+```shell
+pdftoppm -<image_format> <pdf_filename> <image_name>
+pdftoppm -<image_format> <pdf_filename> <image_name>
+```
+
+在下列示例中，我的pdf文件名称是Linux_For_Beginners.pdf，我会将其转换为PNG格式并将图片命为Linux_For_Beginners。
+
+```shell
+pdftoppm -png Linux_For_Beginners.pdf Linux_For_Beginners
+```
+
+将pdf文件每一页都转换为png格式的图片，如Linux_For_Beginners-1.png、Linux_For_Beginners-2.png等。
+
+![img](./assets/v2-669a1753aef51e71f1ea8b908b9fe1cb_1440w.webp)
+
+## **将指定范围内的页面转成图片**
+
+命令如下：
+
+```text
+pdftoppm -<image_format> -f N -l N <pdf_filename> <image_name>
+pdftoppm -<image_format> -f N -l N <pdf_filename> <image_name>
+```
+
+N为起始页编号， -l N 指定结束页编号。
+
+在下面的例子中，我们将文件Linux_For_Beginners.pdf的第10页到第15页转换为PNG。
+
+```text
+pdftoppm -png -f 10 -l 15 Linux_For_Beginners.pdf Linux_For_Beginners
+```
+
+输出的图片名为Linux_For_Beginners-10.png，Linux_For_Beginners-11.png，等。
+
+![img](./assets/v2-bee73f43d6804f2176e01ba83cac910f_1440w.webp)
+
+## **将pdf文件的第一页转成图片**
+
+命令如下：
+
+```shell
+pdftoppm -png -f 1 -l 1 Linux_For_Beginners.pdf Linux_For_Beginners
+```
+
+## **调整转换图片的DPI质量**
+
+Pdftoppm默认将PDF页面转换为DPI为150的图片。
+
+如需要调整，使用参数选项"-rx"和"-ry"。
+
+在这个例子中，我们将Linux_For_Beginners.pdf转换的图片DPI质量调整为300。
+
+```shell
+pdftoppm -png -rx 300 -ry 300 Linux_For_Beginners.pdf Linux_For_Beginners
+```
+
+要查看pdftoppm中可用和支持的所有选项，请运行以下命令：
+
+```shell
+pdftoppm --help  
+man pdftoppm
 ```
