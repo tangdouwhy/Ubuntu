@@ -44,6 +44,9 @@
   - [**将指定范围内的页面转成图片**](#将指定范围内的页面转成图片)
   - [**将pdf文件的第一页转成图片**](#将pdf文件的第一页转成图片)
   - [**调整转换图片的DPI质量**](#调整转换图片的dpi质量)
+- [强制结束程序](#强制结束程序)
+  - [找到程序运行的进程号](#找到程序运行的进程号)
+  - [杀死进程](#杀死进程)
 
 # Ubuntu22.04利用lightdm替换gdm3出现的问题或Bug
 
@@ -750,3 +753,36 @@ pdftoppm -png -rx 300 -ry 300 Linux_For_Beginners.pdf Linux_For_Beginners
 pdftoppm --help  
 man pdftoppm
 ```
+
+# 强制结束程序
+
+## 找到程序运行的进程号
+
+```shell
+sudo pgrep -f "software_name"
+```
+
+或者
+
+```shell
+sudo pidof software_name
+```
+
+## 杀死进程
+
+```shell
+# 使用 ps 命令找到进程号
+ps aux | grep "process_name"
+
+# 或者使用 pgrep 命令
+pgrep -f "process_name"
+```
+
+强制 (PID为进程号)
+
+```shell
+kill -9 PID
+#或者
+pkill -9 "process_name"
+```
+
